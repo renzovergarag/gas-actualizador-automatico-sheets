@@ -1,0 +1,23 @@
+{
+    "name": "gas-actualizacion-reporte-gerencia",
+    "version": "1.0.0",
+    "description": "1. Crear funcionalidad que convierta un archivo xlsx ubicado en una carpeta especifica a google sheet (nativo).\r 2. Ingresar al archivo convertido, leer su información desde una hoja y rango especifico para luego llevar hasta otro archivo de google sheet.\r 3. Una vez que este confirmado que la información se replico en el archivo de destino, se debe enviar un correo de confirmación y eliminar el archivo copiado.",
+    "homepage": "https://github.com/renzovergarag/gas-actualizacion-reporte-gerencia#readme",
+    "bugs": {
+        "url": "https://github.com/renzovergarag/gas-actualizacion-reporte-gerencia/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/renzovergarag/gas-actualizacion-reporte-gerencia.git"
+    },
+    "license": "ISC",
+    "author": "",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "@types/google-apps-script": "^2.0.0"
+    }
+}
