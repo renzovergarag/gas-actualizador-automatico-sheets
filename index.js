@@ -71,14 +71,14 @@ function eliminarArchivoPorId(fileId) {
 function actualizarReporteGerencia() {
     // Parámetros configurables
     var folderId = "1X4TGA52sscSNouf7NAIi6WvRSglGCkkY";
-    var fileName = "Consolidado Seleccion Demanda vs Oferta Morb vs A Morb vs A Sapu - copia";
+    var fileName = "Consolidado Seleccion Demanda vs Oferta Morb vs A Morb vs A Sapu - copia.xlsx";
     var nuevoNombre = "Reporte Gerencia Convertido - " + new Date().toLocaleDateString();
-    var hojaOrigen = "Hoja1"; // Cambia por el nombre real de la hoja
-    var rango = "A1:F20"; // Cambia por el rango real a copiar
-    var destinoId = "ID_DEL_DESTINO"; // Reemplaza por el ID real del archivo destino
-    var hojaDestino = "HojaDestino"; // Cambia por el nombre real de la hoja destino
-    var celdaInicio = "A1";
-    var destinatario = "correo@ejemplo.com"; // Cambia por el correo real
+    var hojaOrigen = "Resumen Seleccion|O Morb|A Morb"; // Cambia por el nombre real de la hoja
+    var rango = "A1:D"; // Cambia por el rango real a copiar
+    var destinoId = "1HNXra6NKMI32YV9hI0yfebpVRd9DlxHZ5BSLpCd_uUo"; // Reemplaza por el ID real del archivo destino
+    var hojaDestino = "Resumen"; // Cambia por el nombre real de la hoja destino
+    var celdaInicio = "A2";
+    var destinatario = "rvergara@cmvalparaiso.cl"; // Cambia por el correo real
     var asunto = "Confirmación de actualización de reporte";
     var mensaje = "La información ha sido replicada exitosamente en el archivo de destino.";
 
@@ -93,13 +93,13 @@ function actualizarReporteGerencia() {
     var convertidoId = convertirXlsxAGoogleSheet(archivo.getId(), nuevoNombre);
 
     // 3. Copiar datos al archivo destino
-    copiarDatosEntreArchivos(convertidoId, hojaOrigen, rango, destinoId, hojaDestino, celdaInicio);
+    //copiarDatosEntreArchivos(convertidoId, hojaOrigen, rango, destinoId, hojaDestino, celdaInicio);
 
     // 4. Enviar correo de confirmación
-    enviarCorreoConfirmacion(destinatario, asunto, mensaje);
+    //enviarCorreoConfirmacion(destinatario, asunto, mensaje);
 
     // 5. Eliminar archivo convertido
-    eliminarArchivoPorId(convertidoId);
+    //eliminarArchivoPorId(convertidoId);
 
     Logger.log("Proceso completado correctamente.");
 }
