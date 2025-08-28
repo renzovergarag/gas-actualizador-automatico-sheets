@@ -18,28 +18,42 @@ const CELDA_INICIO = "A1";
 
 // Parámetros para la notificación por correo
 //* Correo del DESTINATARIO_CORREO
-const DESTINATARIO_CORREO = "rvergara@cmvalparaiso.cl";
+const DESTINATARIO_CORREO = ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"];
 //* ASUNTO_CORREO del correo
-const ASUNTO_CORREO = "Confirmación de actualización de reporte";
+const ASUNTO_CORREO = "Confirmación de actualización de reporte de gerencia";
 //* Cuerpo del correo
 const MENSAJE_CORREO = "La información ha sido replicada exitosamente en el archivo de destino.";
+
+//* Correos para notificación de errores
+const DESTINATARIOS_ERROR = ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"];
+//* ASUNTO_CORREO para errores
+const ASUNTO_ERROR = "Error en actualización de reporte de gerencia";
+//* Cuerpo base del correo de error
+const MENSAJE_ERROR_BASE = "Ha ocurrido un error durante la actualización del reporte. Detalles: ";
 
 /**
  * Flujo principal: convierte, copia datos, notifica y elimina el archivo convertido.
  * Ajusta los parámetros según tus necesidades.
  */
 function actualizarReporteGerencia() {
+    var errorOcurrido = false;
+    var mensajeError = "";
+
     // 1. Obtener archivo xlsx
-    var archivo = obtenerArchivoPorNombre(FOLDER_ID, FILE_NAME);
+    var archivo = obtenerArchivoPorNombre();
     if (!archivo) {
-        Logger.log("Archivo no encontrado en la carpeta.");
+        mensajeError = "Archivo no encontrado en la carpeta.";
+        Logger.log(mensajeError);
+        enviarCorreoError(mensajeError);
         return;
     }
 
     // 2. Convertir a Google Sheets
-    var convertidoId = convertirXlsxAGoogleSheet(archivo.getId(), NUEVO_NOMBRE);
+    var convertidoId = convertirXlsxAGoogleSheet(archivo.getId());
     if (!convertidoId) {
-        Logger.log("Error en la conversión del archivo. Proceso cancelado.");
+        mensajeError = "Error en la conversión del archivo. Proceso cancelado.";
+        Logger.log(mensajeError);
+        enviarCorreoError(mensajeError);
         return;
     }
 
@@ -47,29 +61,52 @@ function actualizarReporteGerencia() {
     try {
         SpreadsheetApp.openById(convertidoId);
     } catch (e) {
-        Logger.log("El archivo convertido no es accesible como Google Sheet: " + e);
+        mensajeError = "El archivo convertido no es accesible como Google Sheet: " + e;
+        Logger.log(mensajeError);
+        enviarCorreoError(mensajeError);
         return;
     }
 
     // 3. Copiar datos al archivo destino
-    copiarDatosEntreArchivos(convertidoId, HOJA_ORIGEN, RANGO_DATOS_ORIGEN, DESTINO_ID, HOJA_DESTINO, CELDA_INICIO);
+    try {
+        copiarDatosEntreArchivos(convertidoId);
+    } catch (e) {
+        mensajeError = "Error al copiar datos: " + e;
+        Logger.log(mensajeError);
+        enviarCorreoError(mensajeError);
+        eliminarArchivoPorId(convertidoId); // Limpiar archivo convertido
+        return;
+    }
 
     // 4. Enviar correo de confirmación
-    enviarCorreoConfirmacion(DESTINATARIO_CORREO, ASUNTO_CORREO, MENSAJE_CORREO);
+    try {
+        enviarCorreoConfirmacion();
+    } catch (e) {
+        mensajeError = "Error al enviar correo de confirmación: " + e;
+        Logger.log(mensajeError);
+        enviarCorreoError(mensajeError);
+        eliminarArchivoPorId(convertidoId); // Limpiar archivo convertido
+        return;
+    }
 
     // 5. Eliminar archivo convertido
-    eliminarArchivoPorId(convertidoId);
+    try {
+        eliminarArchivoPorId(convertidoId);
+    } catch (e) {
+        mensajeError = "Error al eliminar archivo convertido: " + e;
+        Logger.log(mensajeError);
+        enviarCorreoError(mensajeError);
+        return;
+    }
 
     Logger.log("Proceso completado correctamente.");
 }
 
 /**
  * Obtiene el archivo xlsx a convertir desde una carpeta específica por nombre.
- * @param {string} FOLDER_ID - ID de la carpeta en Google Drive.
- * @param {string} FILE_NAME - Nombre exacto del archivo a buscar.
  * @returns {GoogleAppsScript.Drive.File|null} El archivo encontrado o null si no existe.
  */
-function obtenerArchivoPorNombre(FOLDER_ID, FILE_NAME) {
+function obtenerArchivoPorNombre() {
     var carpeta = DriveApp.getFolderById(FOLDER_ID);
     var archivos = carpeta.getFilesByName(FILE_NAME);
     return archivos.hasNext() ? archivos.next() : null;
@@ -78,10 +115,9 @@ function obtenerArchivoPorNombre(FOLDER_ID, FILE_NAME) {
 /**
  * Convierte un archivo xlsx a Google Sheets usando solo métodos nativos de Apps Script.
  * @param {string} fileId - ID del archivo xlsx a convertir.
- * @param {string} NUEVO_NOMBRE - Nombre para el archivo convertido.
  * @returns {string|null} ID del archivo convertido a Google Sheets, o null si falla.
  */
-function convertirXlsxAGoogleSheet(fileId, NUEVO_NOMBRE) {
+function convertirXlsxAGoogleSheet(fileId) {
     try {
         var archivoXlsx = DriveApp.getFileById(fileId);
         var blob = archivoXlsx.getBlob();
@@ -104,13 +140,8 @@ function convertirXlsxAGoogleSheet(fileId, NUEVO_NOMBRE) {
 /**
  * Copia un RANGO_DATOS_ORIGEN de datos de una hoja origen a una hoja destino.
  * @param {string} origenId - ID del archivo Google Sheets origen.
- * @param {string} HOJA_ORIGEN - Nombre de la hoja origen.
- * @param {string} RANGO_DATOS_ORIGEN - RANGO_DATOS_ORIGEN en notación A1 (ej: "A1:F20").
- * @param {string} DESTINO_ID - ID del archivo Google Sheets destino.
- * @param {string} HOJA_DESTINO - Nombre de la hoja destino.
- * @param {string} CELDA_INICIO - Celda de inicio en la hoja destino (ej: "A1").
  */
-function copiarDatosEntreArchivos(origenId, HOJA_ORIGEN, RANGO_DATOS_ORIGEN, DESTINO_ID, HOJA_DESTINO, CELDA_INICIO) {
+function copiarDatosEntreArchivos(origenId) {
     try {
         var ssOrigen = SpreadsheetApp.openById(origenId);
         var hojaOrig = ssOrigen.getSheetByName(HOJA_ORIGEN);
@@ -138,12 +169,28 @@ function copiarDatosEntreArchivos(origenId, HOJA_ORIGEN, RANGO_DATOS_ORIGEN, DES
 
 /**
  * Envía un correo de confirmación usando GmailApp.
- * @param {string} DESTINATARIO_CORREO - Correo electrónico del DESTINATARIO_CORREO.
- * @param {string} ASUNTO_CORREO - ASUNTO_CORREO del correo.
- * @param {string} MENSAJE_CORREO - Cuerpo del correo.
  */
-function enviarCorreoConfirmacion(DESTINATARIO_CORREO, ASUNTO_CORREO, MENSAJE_CORREO) {
-    GmailApp.sendEmail(DESTINATARIO_CORREO, ASUNTO_CORREO, MENSAJE_CORREO);
+function enviarCorreoConfirmacion() {
+    try {
+        GmailApp.sendEmail(DESTINATARIO_CORREO, ASUNTO_CORREO, MENSAJE_CORREO);
+    } catch (e) {
+        Logger.log("Error al enviar correo de confirmación: " + e);
+        throw e; // Re-lanzar para que sea capturado en la función principal
+    }
+}
+
+/**
+ * Envía un correo de error a múltiples destinatarios.
+ * @param {string} mensajeError - Detalles del error ocurrido.
+ */
+function enviarCorreoError(mensajeError) {
+    try {
+        var mensajeCompleto = MENSAJE_ERROR_BASE + mensajeError;
+        GmailApp.sendEmail(DESTINATARIOS_ERROR.join(","), ASUNTO_ERROR, mensajeCompleto);
+    } catch (e) {
+        Logger.log("Error al enviar correo de error: " + e);
+        // No re-lanzar aquí, ya que estamos en modo de error
+    }
 }
 
 /**
@@ -151,6 +198,11 @@ function enviarCorreoConfirmacion(DESTINATARIO_CORREO, ASUNTO_CORREO, MENSAJE_CO
  * @param {string} fileId - ID del archivo a eliminar.
  */
 function eliminarArchivoPorId(fileId) {
-    var archivo = DriveApp.getFileById(fileId);
-    archivo.setTrashed(true);
+    try {
+        var archivo = DriveApp.getFileById(fileId);
+        archivo.setTrashed(true);
+    } catch (e) {
+        Logger.log("Error al eliminar archivo: " + e);
+        throw e; // Re-lanzar para que sea capturado en la función principal
+    }
 }
