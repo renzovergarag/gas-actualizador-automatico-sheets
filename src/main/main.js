@@ -22,3 +22,13 @@ function actualizarReporteCuposBloqueados() {
     const config = configs.reporteCuposBloqueados;
     ejecutarFlujoETL(config);
 }
+
+/**
+ * Ejecuta el flujo ETL para el reporte de cupos bloqueados.
+ * Esta función puede ser seleccionada en un trigger de Google Apps Script.
+ */
+function actualizarReporteNSP() {
+    const configs = getConfigs();
+    const config = configs.reporteCuposNSP;
+    ejecutarFlujoETL(config);
+}
