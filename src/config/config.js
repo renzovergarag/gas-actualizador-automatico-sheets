@@ -70,7 +70,7 @@ const CONFIGS = {
         // Nombre del flujo para identificacion
         name: "Reporte de NSP",
         // ID de la carpeta donde está el archivo Excel
-        folderId: "1I2HRX-1ssQn8khMrQZCW5WoxFm4yRzYk02heTt2",
+        folderId: "1ssQn8khMrQZCW5WoxFm4yRzYk02heTt2",
         // Nombre del archivo Excel a convertir
         fileName: "Consolidado NSP v2.xlsx",
         // Nombre de la hoja de origen en el Excel
