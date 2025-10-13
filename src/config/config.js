@@ -7,6 +7,8 @@ const CONFIGS = {
      * Configuración para el reporte de gerencia.
      */
     reporteGerencia: {
+        // Nombre del flujo para identificacion
+        name: "Reporte de Gerencia",
         // ID de la carpeta donde está el archivo Excel
         folderId: "1ssQn8khMrQZCW5WoxFm4yRzYk02heTt2",
         // Nombre del archivo Excel a convertir

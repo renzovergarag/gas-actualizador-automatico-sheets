@@ -34,6 +34,7 @@ El proyecto ha sido refactorizado para ser modular y reutilizable, permitiendo a
 
 -   **config/config.js**: Contiene el objeto `CONFIGS` con subobjetos para cada flujo. Cada configuración incluye todos los parámetros necesarios (IDs, nombres, correos, etc.).
 -   **services/etlService.js**: Servicio con funciones reutilizables como `obtenerArchivoPorNombre`, `convertirXlsxAGoogleSheet`, `copiarDatosEntreArchivos`, etc. Incluye la función `ejecutarFlujoETL` que orquesta el proceso completo.
+-   **services/emailService.js**: Servicio dedicado al envío de correos con plantillas uniformes que incluyen metadatos del proceso (fecha, nombre del flujo, archivo procesado, etc.).
 -   **main/main.js**: Contiene funciones específicas para cada flujo (ej: `actualizarReporteGerencia`), que pueden ser seleccionadas en triggers de Apps Script para ejecuciones programadas independientes.
 
 ## Requerimientos
@@ -115,8 +116,8 @@ Ejecuta el flujo ETL completo basado en la configuración proporcionada.
 -   `obtenerArchivoPorNombre(folderId, fileName)`: Obtiene un archivo por nombre desde una carpeta.
 -   `convertirXlsxAGoogleSheet(fileId, newName)`: Convierte XLSX a Google Sheets.
 -   `copiarDatosEntreArchivos(sourceId, sourceSheet, range, destId, destSheet, startCell)`: Copia datos entre spreadsheets.
--   `enviarCorreoConfirmacion(emails, subject, body)`: Envía correo de éxito.
--   `enviarCorreoError(emails, subject, baseMessage, details)`: Envía correo de error.
+-   `enviarCorreoConfirmacion(emails, subject, flujoNombre, mensaje, metadatos)`: Envía correo de éxito con plantilla uniforme.
+-   `enviarCorreoError(emails, subject, flujoNombre, mensaje, metadatos)`: Envía correo de error con plantilla uniforme.
 -   `eliminarArchivoPorId(fileId)`: Elimina un archivo por ID.
 
 ## Notas Técnicas

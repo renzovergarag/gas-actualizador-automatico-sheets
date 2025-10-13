@@ -79,42 +79,19 @@ function copiarDatosEntreArchivos(sourceSpreadsheetId, sourceSheetName, dataRang
 }
 
 /**
- * Envía un correo de confirmación.
- * @param {string[]} emails - Lista de correos destinatarios.
- * @param {string} subject - Asunto del correo.
- * @param {string} body - Cuerpo del correo.
- */
-function enviarCorreoConfirmacion(emails, subject, body) {
-    try {
-        GmailApp.sendEmail(emails.join(","), subject, body);
-        Logger.log("Correo de confirmación enviado");
-    } catch (e) {
-        Logger.log("Error al enviar correo de confirmación: " + e);
-        throw e;
-    }
-}
-
-/**
- * Envía un correo de error.
- * @param {string[]} emails - Lista de correos destinatarios.
- * @param {string} subject - Asunto del correo.
- * @param {string} baseMessage - Mensaje base del error.
- * @param {string} errorDetails - Detalles del error.
- */
-function enviarCorreoError(emails, subject, baseMessage, errorDetails) {
-    try {
-        let mensajeCompleto = baseMessage + errorDetails;
-        GmailApp.sendEmail(emails.join(","), subject, mensajeCompleto);
-        Logger.log("Correo de error enviado");
-    } catch (e) {
-        Logger.log("Error al enviar correo de error: " + e);
-    }
-}
-
-/**
  * Elimina un archivo de Google Drive por su ID.
  * @param {string} fileId - ID del archivo a eliminar.
  */
+function eliminarArchivoPorId(fileId) {
+    try {
+        let archivo = DriveApp.getFileById(fileId);
+        archivo.setTrashed(true);
+        Logger.log("Archivo eliminado exitosamente");
+    } catch (e) {
+        Logger.log("Error al eliminar archivo: " + e);
+        throw e;
+    }
+}
 function eliminarArchivoPorId(fileId) {
     try {
         let archivo = DriveApp.getFileById(fileId);
@@ -133,13 +110,18 @@ function eliminarArchivoPorId(fileId) {
 function ejecutarFlujoETL(config) {
     let errorOcurrido = false;
     let mensajeError = "";
+    let metadatos = {
+        archivoProcesado: config.fileName,
+        idDestino: config.destinationSpreadsheetId,
+        rangoDatos: config.dataRange,
+    };
 
     // 1. Obtener archivo XLSX
     let archivo = obtenerArchivoPorNombre(config.folderId, config.fileName);
     if (!archivo) {
         mensajeError = "Archivo no encontrado en la carpeta.";
         Logger.log(mensajeError);
-        enviarCorreoError(config.errorEmails, config.errorSubject, config.errorBodyBase, mensajeError);
+        enviarCorreoError(config.errorEmails, config.errorSubject, config.name, mensajeError, metadatos);
         return;
     }
 
@@ -149,7 +131,7 @@ function ejecutarFlujoETL(config) {
     if (!convertidoId) {
         mensajeError = "Error en la conversión del archivo. Proceso cancelado.";
         Logger.log(mensajeError);
-        enviarCorreoError(config.errorEmails, config.errorSubject, config.errorBodyBase, mensajeError);
+        enviarCorreoError(config.errorEmails, config.errorSubject, config.name, mensajeError, metadatos);
         return;
     }
 
@@ -159,7 +141,7 @@ function ejecutarFlujoETL(config) {
     } catch (e) {
         mensajeError = "El archivo convertido no es accesible como Google Sheet: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(config.errorEmails, config.errorSubject, config.errorBodyBase, mensajeError);
+        enviarCorreoError(config.errorEmails, config.errorSubject, config.name, mensajeError, metadatos);
         return;
     }
 
@@ -169,18 +151,18 @@ function ejecutarFlujoETL(config) {
     } catch (e) {
         mensajeError = "Error al copiar datos: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(config.errorEmails, config.errorSubject, config.errorBodyBase, mensajeError);
+        enviarCorreoError(config.errorEmails, config.errorSubject, config.name, mensajeError, metadatos);
         eliminarArchivoPorId(convertidoId);
         return;
     }
 
     // 4. Enviar correo de confirmación
     try {
-        enviarCorreoConfirmacion(config.notificationEmails, config.emailSubject, config.emailBody);
+        enviarCorreoConfirmacion(config.notificationEmails, config.emailSubject, config.name, config.emailBody, metadatos);
     } catch (e) {
         mensajeError = "Error al enviar correo de confirmación: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(config.errorEmails, config.errorSubject, config.errorBodyBase, mensajeError);
+        enviarCorreoError(config.errorEmails, config.errorSubject, config.name, mensajeError, metadatos);
         eliminarArchivoPorId(convertidoId);
         return;
     }
@@ -191,7 +173,7 @@ function ejecutarFlujoETL(config) {
     } catch (e) {
         mensajeError = "Error al eliminar archivo convertido: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(config.errorEmails, config.errorSubject, config.errorBodyBase, mensajeError);
+        enviarCorreoError(config.errorEmails, config.errorSubject, config.name, mensajeError, metadatos);
         return;
     }
 
