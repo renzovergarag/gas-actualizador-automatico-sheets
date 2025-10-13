@@ -36,11 +36,12 @@ const MENSAJE_ERROR_BASE = "Ha ocurrido un error durante la actualización del r
  * Ajusta los parámetros según tus necesidades.
  */
 function actualizarReporteGerencia() {
-    var errorOcurrido = false;
-    var mensajeError = "";
+    let errorOcurrido = false;
+    let mensajeError = "";
 
     // 1. Obtener archivo xlsx
-    var archivo = obtenerArchivoPorNombre();
+    let archivo = obtenerArchivoPorNombre();
+    // 1.1 Verificar que el archivo existe
     if (!archivo) {
         mensajeError = "Archivo no encontrado en la carpeta.";
         Logger.log(mensajeError);
@@ -49,7 +50,7 @@ function actualizarReporteGerencia() {
     }
 
     // 2. Convertir a Google Sheets
-    var convertidoId = convertirXlsxAGoogleSheet(archivo.getId());
+    let convertidoId = convertirXlsxAGoogleSheet(archivo.getId());
     if (!convertidoId) {
         mensajeError = "Error en la conversión del archivo. Proceso cancelado.";
         Logger.log(mensajeError);
@@ -107,8 +108,8 @@ function actualizarReporteGerencia() {
  * @returns {GoogleAppsScript.Drive.File|null} El archivo encontrado o null si no existe.
  */
 function obtenerArchivoPorNombre() {
-    var carpeta = DriveApp.getFolderById(FOLDER_ID);
-    var archivos = carpeta.getFilesByName(FILE_NAME);
+    let carpeta = DriveApp.getFolderById(FOLDER_ID);
+    let archivos = carpeta.getFilesByName(FILE_NAME);
     return archivos.hasNext() ? archivos.next() : null;
 }
 
@@ -119,16 +120,16 @@ function obtenerArchivoPorNombre() {
  */
 function convertirXlsxAGoogleSheet(fileId) {
     try {
-        var archivoXlsx = DriveApp.getFileById(fileId);
-        var blob = archivoXlsx.getBlob();
+        let archivoXlsx = DriveApp.getFileById(fileId);
+        let blob = archivoXlsx.getBlob();
 
         // Crear el archivo como Google Sheets usando Drive API avanzado
-        var resource = {
+        let resource = {
             title: NUEVO_NOMBRE,
             mimeType: "application/vnd.google-apps.spreadsheet",
         };
 
-        var nuevoArchivo = Drive.Files.insert(resource, blob);
+        let nuevoArchivo = Drive.Files.insert(resource, blob);
         Logger.log("Archivo convertido exitosamente. ID: " + nuevoArchivo.id);
         return nuevoArchivo.id;
     } catch (e) {
@@ -143,23 +144,23 @@ function convertirXlsxAGoogleSheet(fileId) {
  */
 function copiarDatosEntreArchivos(origenId) {
     try {
-        var ssOrigen = SpreadsheetApp.openById(origenId);
-        var hojaOrig = ssOrigen.getSheetByName(HOJA_ORIGEN);
+        let ssOrigen = SpreadsheetApp.openById(origenId);
+        let hojaOrig = ssOrigen.getSheetByName(HOJA_ORIGEN);
         if (!hojaOrig) {
             Logger.log("Hoja origen '" + HOJA_ORIGEN + "' no encontrada");
             return;
         }
-        var datos = hojaOrig.getRange(RANGO_DATOS_ORIGEN).getValues();
+        let datos = hojaOrig.getRange(RANGO_DATOS_ORIGEN).getValues();
 
-        var ssDestino = SpreadsheetApp.openById(DESTINO_ID);
-        var hojaDest = ssDestino.getSheetByName(HOJA_DESTINO);
+        let ssDestino = SpreadsheetApp.openById(DESTINO_ID);
+        let hojaDest = ssDestino.getSheetByName(HOJA_DESTINO);
         if (!hojaDest) {
             Logger.log("Hoja destino '" + HOJA_DESTINO + "' no encontrada");
             return;
         }
 
         // Usar offset para calcular el RANGO_DATOS_ORIGEN destino de manera más confiable
-        var celdaInicial = hojaDest.getRange(CELDA_INICIO);
+        let celdaInicial = hojaDest.getRange(CELDA_INICIO);
         celdaInicial.offset(0, 0, datos.length, datos[0].length).setValues(datos);
         Logger.log("Datos copiados exitosamente");
     } catch (e) {
@@ -185,7 +186,7 @@ function enviarCorreoConfirmacion() {
  */
 function enviarCorreoError(mensajeError) {
     try {
-        var mensajeCompleto = MENSAJE_ERROR_BASE + mensajeError;
+        let mensajeCompleto = MENSAJE_ERROR_BASE + mensajeError;
         GmailApp.sendEmail(DESTINATARIOS_ERROR.join(","), ASUNTO_ERROR, mensajeCompleto);
     } catch (e) {
         Logger.log("Error al enviar correo de error: " + e);
@@ -199,7 +200,7 @@ function enviarCorreoError(mensajeError) {
  */
 function eliminarArchivoPorId(fileId) {
     try {
-        var archivo = DriveApp.getFileById(fileId);
+        let archivo = DriveApp.getFileById(fileId);
         archivo.setTrashed(true);
     } catch (e) {
         Logger.log("Error al eliminar archivo: " + e);
