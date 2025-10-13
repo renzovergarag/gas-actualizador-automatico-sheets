@@ -4,17 +4,21 @@
  */
 
 /**
- * Ejecuta el flujo ETL para el reporte de gerencia.
+ * Ejecuta el flujo ETL para el reporte de selección de demanda vs morbilidad.
  * Esta función puede ser seleccionada en un trigger de Google Apps Script.
  */
-function actualizarReporteGerencia() {
+function actualizarReporteSeleccionDemandaVsMorbilidad() {
     const configs = getConfigs();
-    const config = configs.reporteGerencia;
+    const config = configs.reporteSeleccionDemandaVsMorbilidad;
     ejecutarFlujoETL(config);
 }
 
-// Aquí se pueden agregar más funciones para otros flujos, ej.:
 /**
- * Función para otro flujo ETL.
- * Ejemplo: function actualizarOtroReporte() { ... }
+ * Ejecuta el flujo ETL para el reporte de cupos bloqueados.
+ * Esta función puede ser seleccionada en un trigger de Google Apps Script.
  */
+function actualizarReporteCuposBloqueados() {
+    const configs = getConfigs();
+    const config = configs.reporteCuposBloqueados;
+    ejecutarFlujoETL(config);
+}
