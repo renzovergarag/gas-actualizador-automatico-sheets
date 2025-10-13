@@ -11,6 +11,31 @@ Esta es una aplicación de Google Apps Script diseñada para automatizar la actu
 
 Esta automatización es útil para mantener reportes actualizados sin intervención manual, integrándose perfectamente con herramientas de Google como Drive, Sheets y Gmail.
 
+## Arquitectura Modular
+
+El proyecto ha sido refactorizado para ser modular y reutilizable, permitiendo agregar fácilmente nuevos flujos ETL sin duplicar código.
+
+### Estructura de Archivos
+
+```
+/
+├── config/
+│   └── config.js          # Configuraciones globales para todos los flujos
+├── services/
+│   └── etlService.js      # Funciones reutilizables del servicio ETL
+├── main/
+│   └── main.js            # Funciones principales para ejecutar flujos específicos
+├── appsscript.json        # Configuración de Google Apps Script
+├── package.json           # Dependencias del proyecto
+└── README.md              # Esta documentación
+```
+
+### Componentes Principales
+
+-   **config/config.js**: Contiene el objeto `CONFIGS` con subobjetos para cada flujo. Cada configuración incluye todos los parámetros necesarios (IDs, nombres, correos, etc.).
+-   **services/etlService.js**: Servicio con funciones reutilizables como `obtenerArchivoPorNombre`, `convertirXlsxAGoogleSheet`, `copiarDatosEntreArchivos`, etc. Incluye la función `ejecutarFlujoETL` que orquesta el proceso completo.
+-   **main/main.js**: Contiene funciones específicas para cada flujo (ej: `actualizarReporteGerencia`), que pueden ser seleccionadas en triggers de Apps Script para ejecuciones programadas independientes.
+
 ## Requerimientos
 
 La aplicación debe cumplir con los siguientes requerimientos funcionales:
@@ -22,32 +47,77 @@ La aplicación debe cumplir con los siguientes requerimientos funcionales:
 ## Funcionalidades Adicionales
 
 -   **Manejo robusto de errores**: El script incluye manejo de excepciones en cada paso del proceso. Si ocurre un error en cualquier etapa (conversión, copia, envío de correo o eliminación), se envía automáticamente un correo de notificación de error con detalles específicos a múltiples destinatarios.
--   **Configuración centralizada**: Todos los parámetros (IDs de archivos, nombres de hojas, rangos, correos electrónicos) se definen como constantes globales al inicio del script, facilitando la personalización y mantenimiento.
+-   **Configuración centralizada**: Todos los parámetros se definen en el objeto `CONFIGS`, facilitando la personalización y mantenimiento.
 -   **Logging detallado**: Registra cada paso del proceso en los logs de Google Apps Script para facilitar la depuración y monitoreo.
+-   **Reutilizable**: Fácil agregar nuevos flujos agregando configuraciones y funciones en `main.js`.
 
 ## Configuración
 
-Antes de ejecutar el script, asegúrate de configurar las siguientes constantes en el archivo `index.js`:
+### Agregar un Nuevo Flujo
 
--   `FOLDER_ID`: ID de la carpeta de Google Drive donde se encuentra el archivo Excel origen.
--   `FILE_NAME`: Nombre exacto del archivo Excel a convertir.
--   `NUEVO_NOMBRE`: Nombre base para el archivo convertido (se agrega la fecha automáticamente).
--   `HOJA_ORIGEN`: Nombre de la hoja en el archivo origen (puede incluir múltiples hojas separadas por `|`).
--   `RANGO_DATOS_ORIGEN`: Rango de celdas a copiar (ej: "A1:D").
--   `DESTINO_ID`: ID del archivo Google Sheets de destino.
--   `HOJA_DESTINO`: Nombre de la hoja en el archivo destino.
--   `CELDA_INICIO`: Celda de inicio para pegar los datos (ej: "A1").
--   `DESTINATARIO_CORREO`: Array de correos para notificaciones de éxito.
--   `ASUNTO_CORREO` y `MENSAJE_CORREO`: Asunto y cuerpo del correo de confirmación.
--   `DESTINATARIOS_ERROR`: Array de correos para notificaciones de error.
--   `ASUNTO_ERROR` y `MENSAJE_ERROR_BASE`: Asunto y cuerpo base del correo de error.
+1. **Agregar configuración en `config/config.js`**:
+
+    ```javascript
+    const CONFIGS = {
+      // Flujo existente
+      reporteGerencia: { ... },
+
+      // Nuevo flujo
+      nuevoFlujo: {
+        folderId: "ID_DE_LA_CARPETA",
+        fileName: "NombreDelArchivo.xlsx",
+        sourceSheetName: "NombreHojaOrigen",
+        dataRange: "A1:D",
+        destinationSpreadsheetId: "ID_DESTINO",
+        destinationSheetName: "HojaDestino",
+        startCell: "A1",
+        notificationEmails: ["correo1@ejemplo.com", "correo2@ejemplo.com"],
+        emailSubject: "Asunto del correo",
+        emailBody: "Cuerpo del correo",
+        errorEmails: ["error1@ejemplo.com"],
+        errorSubject: "Asunto error",
+        errorBodyBase: "Mensaje base de error: "
+      }
+    };
+    ```
+
+2. **Agregar función en `main/main.js`**:
+
+    ```javascript
+    function actualizarNuevoFlujo() {
+        const configs = getConfigs();
+        const config = configs.nuevoFlujo;
+        ejecutarFlujoETL(config);
+    }
+    ```
+
+3. **Configurar trigger**: En Google Apps Script, crea un trigger para `actualizarNuevoFlujo` con la frecuencia deseada.
 
 ## Uso
 
-1. **Despliegue**: Sube el archivo `index.js` a un proyecto de Google Apps Script en Google Drive.
+1. **Despliegue**: Sube los archivos a un proyecto de Google Apps Script en Google Drive.
 2. **Permisos**: Asegúrate de que el script tenga los permisos necesarios para acceder a Drive, Sheets y Gmail (configura los scopes en `appsscript.json` si es necesario).
-3. **Ejecución**: Llama a la función `actualizarReporteGerencia()` desde el editor de Apps Script o configúrala como un trigger automático (ej: diario).
+3. **Ejecución**: Llama a las funciones específicas (ej: `actualizarReporteGerencia()`) desde el editor de Apps Script o configúralas como triggers automáticos.
 4. **Monitoreo**: Revisa los logs en el editor de Apps Script para verificar el progreso y cualquier error.
+
+## API del Servicio ETL
+
+### ejecutarFlujoETL(config)
+
+Ejecuta el flujo ETL completo basado en la configuración proporcionada.
+
+**Parámetros:**
+
+-   `config` (Object): Objeto con la configuración del flujo.
+
+**Funciones Auxiliares:**
+
+-   `obtenerArchivoPorNombre(folderId, fileName)`: Obtiene un archivo por nombre desde una carpeta.
+-   `convertirXlsxAGoogleSheet(fileId, newName)`: Convierte XLSX a Google Sheets.
+-   `copiarDatosEntreArchivos(sourceId, sourceSheet, range, destId, destSheet, startCell)`: Copia datos entre spreadsheets.
+-   `enviarCorreoConfirmacion(emails, subject, body)`: Envía correo de éxito.
+-   `enviarCorreoError(emails, subject, baseMessage, details)`: Envía correo de error.
+-   `eliminarArchivoPorId(fileId)`: Elimina un archivo por ID.
 
 ## Notas Técnicas
 
