@@ -40,21 +40,21 @@ function actualizarReporteGerencia() {
     let mensajeError = "";
 
     // 1. Obtener archivo xlsx
-    let archivo = obtenerArchivoPorNombre();
+    let archivo = obtenerArchivoPorNombreOld();
     // 1.1 Verificar que el archivo existe
     if (!archivo) {
         mensajeError = "Archivo no encontrado en la carpeta.";
         Logger.log(mensajeError);
-        enviarCorreoError(mensajeError);
+        enviarCorreoErrorOld(mensajeError);
         return;
     }
 
     // 2. Convertir a Google Sheets
-    let convertidoId = convertirXlsxAGoogleSheet(archivo.getId());
+    let convertidoId = convertirXlsxAGoogleSheetOld(archivo.getId());
     if (!convertidoId) {
         mensajeError = "Error en la conversión del archivo. Proceso cancelado.";
         Logger.log(mensajeError);
-        enviarCorreoError(mensajeError);
+        enviarCorreoErrorOld(mensajeError);
         return;
     }
 
@@ -64,39 +64,39 @@ function actualizarReporteGerencia() {
     } catch (e) {
         mensajeError = "El archivo convertido no es accesible como Google Sheet: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(mensajeError);
+        enviarCorreoErrorOld(mensajeError);
         return;
     }
 
     // 3. Copiar datos al archivo destino
     try {
-        copiarDatosEntreArchivos(convertidoId);
+        copiarDatosEntreArchivosOld(convertidoId);
     } catch (e) {
         mensajeError = "Error al copiar datos: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(mensajeError);
-        eliminarArchivoPorId(convertidoId); // Limpiar archivo convertido
+        enviarCorreoErrorOld(mensajeError);
+        eliminarArchivoPorIdOld(convertidoId); // Limpiar archivo convertido
         return;
     }
 
     // 4. Enviar correo de confirmación
     try {
-        enviarCorreoConfirmacion();
+        enviarCorreoConfirmacionOld();
     } catch (e) {
         mensajeError = "Error al enviar correo de confirmación: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(mensajeError);
-        eliminarArchivoPorId(convertidoId); // Limpiar archivo convertido
+        enviarCorreoErrorOld(mensajeError);
+        eliminarArchivoPorIdOld(convertidoId); // Limpiar archivo convertido
         return;
     }
 
     // 5. Eliminar archivo convertido
     try {
-        eliminarArchivoPorId(convertidoId);
+        eliminarArchivoPorIdOld(convertidoId);
     } catch (e) {
         mensajeError = "Error al eliminar archivo convertido: " + e;
         Logger.log(mensajeError);
-        enviarCorreoError(mensajeError);
+        enviarCorreoErrorOld(mensajeError);
         return;
     }
 
@@ -107,7 +107,7 @@ function actualizarReporteGerencia() {
  * Obtiene el archivo xlsx a convertir desde una carpeta específica por nombre.
  * @returns {GoogleAppsScript.Drive.File|null} El archivo encontrado o null si no existe.
  */
-function obtenerArchivoPorNombre() {
+function obtenerArchivoPorNombreOld() {
     let carpeta = DriveApp.getFolderById(FOLDER_ID);
     let archivos = carpeta.getFilesByName(FILE_NAME);
     return archivos.hasNext() ? archivos.next() : null;
@@ -118,7 +118,7 @@ function obtenerArchivoPorNombre() {
  * @param {string} fileId - ID del archivo xlsx a convertir.
  * @returns {string|null} ID del archivo convertido a Google Sheets, o null si falla.
  */
-function convertirXlsxAGoogleSheet(fileId) {
+function convertirXlsxAGoogleSheetOld(fileId) {
     try {
         let archivoXlsx = DriveApp.getFileById(fileId);
         let blob = archivoXlsx.getBlob();
@@ -142,7 +142,7 @@ function convertirXlsxAGoogleSheet(fileId) {
  * Copia un RANGO_DATOS_ORIGEN de datos de una hoja origen a una hoja destino.
  * @param {string} origenId - ID del archivo Google Sheets origen.
  */
-function copiarDatosEntreArchivos(origenId) {
+function copiarDatosEntreArchivosOld(origenId) {
     try {
         let ssOrigen = SpreadsheetApp.openById(origenId);
         let hojaOrig = ssOrigen.getSheetByName(HOJA_ORIGEN);
@@ -171,7 +171,7 @@ function copiarDatosEntreArchivos(origenId) {
 /**
  * Envía un correo de confirmación usando GmailApp.
  */
-function enviarCorreoConfirmacion() {
+function enviarCorreoConfirmacionOld() {
     try {
         GmailApp.sendEmail(DESTINATARIO_CORREO, ASUNTO_CORREO, MENSAJE_CORREO);
     } catch (e) {
@@ -184,7 +184,7 @@ function enviarCorreoConfirmacion() {
  * Envía un correo de error a múltiples destinatarios.
  * @param {string} mensajeError - Detalles del error ocurrido.
  */
-function enviarCorreoError(mensajeError) {
+function enviarCorreoErrorOld(mensajeError) {
     try {
         let mensajeCompleto = MENSAJE_ERROR_BASE + mensajeError;
         GmailApp.sendEmail(DESTINATARIOS_ERROR.join(","), ASUNTO_ERROR, mensajeCompleto);
@@ -198,7 +198,7 @@ function enviarCorreoError(mensajeError) {
  * Elimina un archivo de Google Drive por su ID.
  * @param {string} fileId - ID del archivo a eliminar.
  */
-function eliminarArchivoPorId(fileId) {
+function eliminarArchivoPorIdOld(fileId) {
     try {
         let archivo = DriveApp.getFileById(fileId);
         archivo.setTrashed(true);
