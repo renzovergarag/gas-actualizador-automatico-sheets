@@ -24,15 +24,15 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
-        emailSubject: "Confirmación de actualización de reporte de selección de demanda vs morbilidad",
+        emailSubject: "✅ Confirmación de actualización de reporte de selección de demanda vs morbilidad",
         // Cuerpo del correo de confirmación
         emailBody: "La información ha sido replicada exitosamente en el archivo de destino.",
         // Correos para notificación de errores
-        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de error
-        errorSubject: "Error en actualización de reporte de selección de demanda vs morbilidad",
+        errorSubject: "❌ Error en actualización de reporte de selección de demanda vs morbilidad",
         // Cuerpo base del correo de error
         errorBodyBase: "Ha ocurrido un error durante la actualización del reporte. Detalles: ",
     },
@@ -54,15 +54,15 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
-        emailSubject: "Confirmación de actualización de reporte de cupos bloqueados",
+        emailSubject: "✅ Confirmación de actualización de reporte de cupos bloqueados",
         // Cuerpo del correo de confirmación
         emailBody: "La información ha sido replicada exitosamente en el archivo de destino.",
         // Correos para notificación de errores
-        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de error
-        errorSubject: "Error en actualización de reporte de cupos bloqueados",
+        errorSubject: "❌ Error en actualización de reporte de cupos bloqueados",
         // Cuerpo base del correo de error
         errorBodyBase: "Ha ocurrido un error durante la actualización del reporte. Detalles: ",
     },
@@ -84,15 +84,15 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
-        emailSubject: "Confirmación de actualización de reporte de NSP",
+        emailSubject: "✅ Confirmación de actualización de reporte de NSP",
         // Cuerpo del correo de confirmación
         emailBody: "La información ha sido replicada exitosamente en el archivo de destino.",
         // Correos para notificación de errores
-        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de error
-        errorSubject: "Error en actualización de reporte de NSP",
+        errorSubject: "❌ Error en actualización de reporte de NSP",
         // Cuerpo base del correo de error
         errorBodyBase: "Ha ocurrido un error durante la actualización del reporte. Detalles: ",
     },
@@ -108,21 +108,21 @@ const CONFIGS = {
         // Rango de datos a copiar (ej. "A1:D")
         dataRange: "A1:G",
         // ID del archivo Google Sheets de destino
-        destinationSpreadsheetId: "1tng6eYzwUH1HgZ5sVCAjMuIu9Bj3rPEAUIpz-UQDlts",
+        destinationSpreadsheetId: "1Pp0NdKVVtlpf9OCdyUkjVsz6O8BEDTPb5Jf9B79hYfA",
         // Nombre de la hoja de destino
         destinationSheetName: "Resumen",
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
-        emailSubject: "Confirmación de actualización de reporte de NSP",
+        emailSubject: "✅ Confirmación de actualización de reporte de Morbilidades",
         // Cuerpo del correo de confirmación
         emailBody: "La información ha sido replicada exitosamente en el archivo de destino.",
         // Correos para notificación de errores
-        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl"],
+        errorEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de error
-        errorSubject: "Error en actualización de reporte de NSP",
+        errorSubject: "❌ Error en actualización de reporte de Morbilidades",
         // Cuerpo base del correo de error
         errorBodyBase: "Ha ocurrido un error durante la actualización del reporte. Detalles: ",
     },
