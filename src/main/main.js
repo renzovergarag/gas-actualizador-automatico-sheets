@@ -32,3 +32,13 @@ function actualizarReporteNSP() {
     const config = configs.reporteCuposNSP;
     ejecutarFlujoETL(config);
 }
+
+/**
+ * Ejecuta el flujo ETL para el reporte de analisis de morbilidades.
+ * Esta función puede ser seleccionada en un trigger de Google Apps Script.
+ */
+function actualizarReporteAnalisisMorbilidades() {
+    const configs = getConfigs();
+    const config = configs.reporteAnalisisMorbilidades;
+    ejecutarFlujoETL(config);
+}
