@@ -24,7 +24,7 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
+        notificationEmails: ["sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
         emailSubject: "✅ Confirmación de actualización de reporte de selección de demanda vs morbilidad",
         // Cuerpo del correo de confirmación
@@ -54,7 +54,7 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
+        notificationEmails: ["sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
         emailSubject: "✅ Confirmación de actualización de reporte de cupos bloqueados",
         // Cuerpo del correo de confirmación
@@ -84,7 +84,7 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
+        notificationEmails: ["sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
         emailSubject: "✅ Confirmación de actualización de reporte de NSP",
         // Cuerpo del correo de confirmación
@@ -114,7 +114,7 @@ const CONFIGS = {
         // Celda de inicio para pegar los datos
         startCell: "A1",
         // Correos para notificación de éxito
-        notificationEmails: ["rvergara@cmvalparaiso.cl", "sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
+        notificationEmails: ["sordonez@cmvalparaiso.cl", "dsantibanez@cmvalparaiso.cl"],
         // Asunto del correo de confirmación
         emailSubject: "✅ Confirmación de actualización de reporte de Morbilidades",
         // Cuerpo del correo de confirmación
